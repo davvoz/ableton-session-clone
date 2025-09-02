@@ -62,7 +62,28 @@ This project is built with:
 
 ## How can I deploy this project?
 
+### Option 1: Lovable Deployment
 Simply open [Lovable](https://lovable.dev/projects/e6e7c95c-9870-48f5-a9ca-aa9f91d37856) and click on Share -> Publish.
+
+### Option 2: GitHub Pages
+This project is configured for automatic deployment to GitHub Pages. When you push to the main branch, the application will be automatically built and deployed.
+
+**Live Demo**: The application will be available at `https://davvoz.github.io/ableton-session-clone/`
+
+**Manual Deployment**: You can also build for GitHub Pages locally using:
+```sh
+npm run build:gh-pages
+```
+
+The GitHub Actions workflow will:
+1. Install dependencies
+2. Build the project with the correct base path
+3. Deploy to GitHub Pages automatically
+
+**Requirements for GitHub Pages**:
+- GitHub Pages must be enabled in the repository settings
+- Set the source to "GitHub Actions" in the Pages settings
+- The workflow requires `pages: write` and `id-token: write` permissions
 
 ## Can I connect a custom domain to my Lovable project?
 
