@@ -13,7 +13,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
+    // Only enable lovable-tagger in local development (not in CI or production)
+    mode === 'development' && !process.env.CI && !process.env.GITHUB_ACTIONS &&
     componentTagger(),
   ].filter(Boolean),
   resolve: {
