@@ -1,5 +1,5 @@
-import { X, Grid3X3, Zap, Plus, Minus, RotateCcw } from "lucide-react";
-import { useState, useCallback, useRef, useMemo } from "react";
+import { X, Grid3X3, Zap, Plus, Minus, RotateCcw, Eraser } from "lucide-react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { Clip } from "./SessionView";
 import { Button } from "./ui/button";
 
@@ -49,6 +49,44 @@ export const PianoRoll = ({ clip, onClose }: PianoRollProps) => {
 
   const gridRef = useRef<HTMLDivElement>(null);
 
+  const handleDeleteSelectedNotes = useCallback(() => {
+    if (selectedNotes.size > 0) {
+      setMidiNotes(prev => prev.filter(note => !selectedNotes.has(note.id)));
+      setSelectedNotes(new Set());
+    }
+  }, [selectedNotes]);
+
+  // Keyboard shortcuts
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    switch (event.key) {
+      case 'Delete':
+      case 'Backspace':
+        handleDeleteSelectedNotes();
+        break;
+      case 'p':
+      case 'P':
+        if (!event.ctrlKey && !event.metaKey) {
+          setSelectedTool('pencil');
+        }
+        break;
+      case 's':
+      case 'S':
+        if (!event.ctrlKey && !event.metaKey) {
+          setSelectedTool('select');
+        }
+        break;
+      case 'e':
+      case 'E':
+        if (!event.ctrlKey && !event.metaKey) {
+          setSelectedTool('erase');
+        }
+        break;
+      case 'Escape':
+        setSelectedNotes(new Set());
+        break;
+    }
+  }, [handleDeleteSelectedNotes]);
+
   // Helper functions
   const isBlackKey = (note: string) => note.includes('#');
   const getNotePosition = (note: string) => notes.indexOf(note);
@@ -82,6 +120,11 @@ export const PianoRoll = ({ clip, onClose }: PianoRollProps) => {
     
     if (selectedTool === 'erase') {
       setMidiNotes(prev => prev.filter(n => n.id !== noteId));
+      setSelectedNotes(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(noteId);
+        return newSet;
+      });
       return;
     }
 
@@ -114,6 +157,12 @@ export const PianoRoll = ({ clip, onClose }: PianoRollProps) => {
     }
   }, []);
 
+  // Add keyboard event listeners
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   return (
     <div className="fixed inset-0 z-50 bg-background border-t border-border flex flex-col">
       {/* Enhanced Header */}
@@ -145,6 +194,15 @@ export const PianoRoll = ({ clip, onClose }: PianoRollProps) => {
               title="Select Tool (S)"
             >
               <Zap className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={selectedTool === 'erase' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setSelectedTool('erase')}
+              className="h-8 w-8 p-0"
+              title="Erase Tool (E)"
+            >
+              <Eraser className="h-4 w-4" />
             </Button>
           </div>
 
@@ -371,6 +429,16 @@ export const PianoRoll = ({ clip, onClose }: PianoRollProps) => {
           </div>
           
           <span>Length: 4 bars</span>
+          
+          {selectedNotes.size > 0 && (
+            <button
+              onClick={handleDeleteSelectedNotes}
+              className="text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+              title="Delete selected notes (Del)"
+            >
+              Delete ({selectedNotes.size})
+            </button>
+          )}
         </div>
         
         <div className="flex items-center gap-4 text-xs text-foreground-muted">
