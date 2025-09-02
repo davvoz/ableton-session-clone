@@ -4,6 +4,7 @@ import { TrackHeader } from "./TrackHeader";
 import { ClipSlot } from "./ClipSlot";
 import { PianoRoll } from "./PianoRoll";
 import { MasterSection } from "./MasterSection";
+import { DeviceRack } from "./DeviceRack";
 
 export interface Clip {
   id: string;
@@ -41,6 +42,7 @@ export const SessionView = () => {
 
   const [clips, setClips] = useState<{ [key: string]: Clip }>({});
   const [selectedClip, setSelectedClip] = useState<string | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [tempo, setTempo] = useState(120);
@@ -78,6 +80,10 @@ export const SessionView = () => {
     }
   };
 
+  const handleTrackSelect = (trackId: string) => {
+    setSelectedTrack(selectedTrack === trackId ? null : trackId);
+  };
+
   const handlePlay = () => setIsPlaying(!isPlaying);
   const handleStop = () => {
     setIsPlaying(false);
@@ -111,7 +117,13 @@ export const SessionView = () => {
               <span className="text-foreground-muted text-xs font-mono">TRACKS</span>
             </div>
             {tracks.map((track) => (
-              <TrackHeader key={track.id} track={track} />
+              <div 
+                key={track.id}
+                onClick={() => handleTrackSelect(track.id)}
+                className={`cursor-pointer ${selectedTrack === track.id ? 'bg-selected/20' : ''}`}
+              >
+                <TrackHeader track={track} />
+              </div>
             ))}
           </div>
 
@@ -135,6 +147,13 @@ export const SessionView = () => {
             </div>
           </div>
         </div>
+
+        {/* Device Rack */}
+        {selectedTrack && (
+          <DeviceRack 
+            track={tracks.find(t => t.id === selectedTrack)!}
+          />
+        )}
 
         {/* Master Section */}
         <MasterSection />
