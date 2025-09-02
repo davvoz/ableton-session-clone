@@ -62,7 +62,33 @@ This project is built with:
 
 ## How can I deploy this project?
 
+### Option 1: Deploy via Lovable (Recommended)
 Simply open [Lovable](https://lovable.dev/projects/e6e7c95c-9870-48f5-a9ca-aa9f91d37856) and click on Share -> Publish.
+
+### Option 2: Deploy to GitHub Pages
+This project is configured for automatic deployment to GitHub Pages:
+
+1. **Enable GitHub Pages** in your repository settings:
+   - Go to Settings > Pages
+   - Select "GitHub Actions" as the source
+
+2. **Push to main branch** or run the workflow manually:
+   - Any push to the `main` branch will trigger automatic deployment
+   - Or go to Actions tab and run "Deploy to GitHub Pages" manually
+
+3. **Access your deployed site** at:
+   `https://[your-username].github.io/ableton-session-clone/`
+
+### Option 3: Manual Build for Other Platforms
+```sh
+# For GitHub Pages
+npm run build:pages
+
+# For other platforms (root path)
+npm run build
+```
+
+The built files will be in the `dist/` directory.
 
 ## Can I connect a custom domain to my Lovable project?
 
